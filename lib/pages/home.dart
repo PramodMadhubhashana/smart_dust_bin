@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_dust_bin/pages/currentState.dart';
+import 'package:smart_dust_bin/pages/histrograme.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -46,7 +48,7 @@ class _HomeState extends State<Home> {
                         children: [
                           Container(
                             width: 350,
-                            height: 100,
+                            height: 150,
                             decoration: BoxDecoration(
                               color: Colors.purple[300],
                               borderRadius: BorderRadius.circular(50),
@@ -55,10 +57,7 @@ class _HomeState extends State<Home> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text("pramod"),
+                                CurrentSate(),
                               ],
                             ),
                           ),
@@ -72,13 +71,10 @@ class _HomeState extends State<Home> {
                 width: screenWidth,
                 height: remaininghight,
                 decoration: const BoxDecoration(
-                    color: Color.fromARGB(222, 222, 222, 225)),
-                child: Column(
-                  children: [
-                    Text("pramod"),
-                  ],
+                  color: Color.fromARGB(222, 222, 222, 225),
                 ),
-              )
+                child: Histrograme(),
+              ),
             ],
           ),
         ],
