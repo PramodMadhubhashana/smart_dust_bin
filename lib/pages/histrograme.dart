@@ -1,3 +1,6 @@
+import 'dart:ffi';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
@@ -10,49 +13,63 @@ class Histrograme extends StatefulWidget {
 }
 
 class _HistrogrameState extends State<Histrograme> {
-  List<_SalesData> data = [
-    _SalesData('Jan', 500),
-    _SalesData('Feb', 28),
-    _SalesData('Mar', 34),
-    _SalesData('Apr', 32),
-    _SalesData('May', 45),
-    _SalesData('Jun', 500),
-    _SalesData('Jul', 28),
-    _SalesData('Aug', 34),
-    _SalesData('Sep', 32),
-    _SalesData('Oct', 45),
-    _SalesData('Nov', 500),
-    _SalesData('Dec', 28),
-  ];
+  List<_SalesData> data = [];
+
+  Future<void> _fetchDataFromFirestore() async {
+    try {
+      final CollectionReference capacityHistry =
+          FirebaseFirestore.instance.collection('sales');
+      QuerySnapshot querySnapshot = await capacityHistry.get();
+
+      List<_SalesData> newData = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return _SalesData(data['year'], data['sales']);
+      }).toList();
+
+      setState(() {
+        data = newData;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to fetch data from Firestore: $e'),
+      ));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDataFromFirestore();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         SfCartesianChart(
-          title: ChartTitle(
-            text: "Pramodoo",
-          ),
-          primaryXAxis: CategoryAxis(),
-          tooltipBehavior: TooltipBehavior(enable: true),
-          series: <CartesianSeries<_SalesData, String>>[
-            BarSeries<_SalesData, String>(
-              dataSource: data,
-              xValueMapper: (_SalesData sales, _) => sales.year,
-              yValueMapper: (_SalesData sales, _) => sales.sales,
-              name: 'Sales',
-              dataLabelSettings: const DataLabelSettings(isVisible: true),
-              color: Colors.blueAccent,
+            title: ChartTitle(
+              text: "Pramodoo",
             ),
-          ],
-        ),
+            primaryXAxis: CategoryAxis(),
+            tooltipBehavior: TooltipBehavior(enable: true),
+            series: <CartesianSeries<_SalesData, String>>[
+              BarSeries<_SalesData, String>(
+                dataSource: data,
+                xValueMapper: (_SalesData sales, _) => sales.date,
+                yValueMapper: (_SalesData sales, _) => sales.capacity,
+                name: 'Sales',
+                dataLabelSettings: const DataLabelSettings(isVisible: true),
+                color: Colors.blueAccent,
+              )
+            ]),
       ],
     );
   }
 }
 
 class _SalesData {
-  _SalesData(this.year, this.sales);
+  _SalesData(this.date, this.capacity);
 
-  final String year;
-  final double sales;
+  final String date;
+  final double capacity;
 }

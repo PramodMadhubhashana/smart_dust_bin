@@ -11,7 +11,7 @@ class _CurrentSateState extends State<CurrentSate> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [Text("pramdo....")],
+      children: const [Text("pramdo....")],
     );
   }
 }
